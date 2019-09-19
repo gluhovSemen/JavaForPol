@@ -1,0 +1,171 @@
+package lab5;
+
+import javax.swing.JTextArea;
+
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+
+
+public class lab4 {
+	 public static class CWriter extends Thread {
+			//класс, каждый поток которого генерирует буквы (между получившимися словами пробел)
+			static int m_NUMBER_OF_THREADS; //заданное количество потоков, а также количество букв в слове
+			static int m_NUMBER_OF_LINES;
+			
+			static List<CWriter> m_Writers=new LinkedList<CWriter>();
+			static List<Object> m_Synchro=new LinkedList<Object>();
+			static Object mStartSynchro=new Object();
+
+			
+			static Integer m_count;
+			static Integer m_lines;
+			static Integer k;
+			
+			int m_WriterNumber; //номер потока
+			
+			 JTextArea textArea;
+			
+			CWriter(int WriterNumber) {
+			   //закрытый конструктор
+			   m_WriterNumber=WriterNumber;
+			}
+			
+			public static void Start(int NumberOfThreads,int NumberOfLines,JTextArea textArea) {
+			   //запускает потоки, которые будут генерировать буквы
+			   m_NUMBER_OF_THREADS=NumberOfThreads;
+			   m_NUMBER_OF_LINES=NumberOfLines;
+			   m_count=0; //обнуляем счетчики
+			   m_lines=0;
+			   k=NumberOfThreads;
+			   
+			   //инициализируем вектор потоков и запускаем их
+			   for(int i=0; i<m_NUMBER_OF_THREADS; i++) {
+			       m_Writers.add(new CWriter(i));
+			       m_Synchro.add(new Object());
+			   }
+			   for(int i=0; i<m_NUMBER_OF_THREADS; i++)
+			       m_Writers.get(i).start();
+			}
+			
+			
+			
+			private static void Stop() {
+			    //завершает все процессы
+			    class Stopper extends Thread {
+				@Override
+				public synchronized void run() {
+				    for(int i=0; i<m_Writers.size(); i++)
+					m_Writers.get(i).stop();
+				}
+			    }
+			    Stopper stopper=new Stopper();
+			    stopper.start();
+			}
+			
+			
+			
+			public void run(JTextArea textArea) {
+			    if (m_WriterNumber!=0)
+				synchronized (m_Synchro.get(m_WriterNumber)) {
+				    try {
+					m_Synchro.get(m_WriterNumber).wait();
+				    } catch (InterruptedException ex) {
+					Logger.getLogger(lab4.class.getName()).log(Level.SEVERE, null, ex);
+				    }
+				}
+			
+			    
+			    //-----------------------
+			    while(true) {
+				synchronized (m_Synchro.get(m_WriterNumber)) {
+					
+					m_count++;
+				     		  
+				    if (m_count==m_NUMBER_OF_THREADS) {
+				    	m_count=0;
+				    	m_lines++;
+					
+					if (m_lines==m_NUMBER_OF_LINES) {
+						textArea.append("Thread: %s "+m_WriterNumber);
+					   	Stop(); //создаем поток, который завершит все остальные потоки
+										try {
+												m_Synchro.get(m_WriterNumber).wait(); //никого не впускаем в секцию
+										} catch (InterruptedException ex) {
+											Logger.getLogger(lab4.class.getName()).log(Level.SEVERE, null, ex);
+										}
+										}
+						    }
+				    
+				    
+				   //печать потоков
+				    textArea.append("Thread: "+m_WriterNumber);
+				   
+				    
+				    if (m_WriterNumber>=m_Writers.size()-1) {
+					synchronized(m_Synchro.get(0)) {
+					    m_Synchro.get(0).notify();
+					}
+				    } else { 
+					synchronized(m_Synchro.get(m_WriterNumber+1)) {
+					    m_Synchro.get(m_WriterNumber+1).notify();
+					}
+				    }
+					   
+				    if (m_count %  k == 0) {
+				    System.out.println("  ");
+				    }
+				    	
+				    try {
+					m_Synchro.get(m_WriterNumber).wait();
+				    } catch (InterruptedException ex) {
+					Logger.getLogger(lab4.class.getName()).log(Level.SEVERE, null, ex);
+				    }
+					
+				}	
+			    }
+			    //-------------
+			}
+			
+			public static void Join() throws InterruptedException {
+			    //ожидание завершения всех потоков
+			    for(int i=0; i<m_Writers.size(); i++)
+				m_Writers.get(i).join();
+			}
+		    }
+		    
+		    
+		  public static void laba4(Integer one, Integer two, JTextArea textArea) {
+			
+			
+				
+			int NumberOfThreads=0;
+			int NumberOfLines=0;
+			
+			try {
+			    NumberOfThreads=one;
+			    NumberOfLines=two; 
+			} catch (Exception e) {
+				textArea.append("your params may not be an integer. Exception: " + e.getMessage());
+			    System.exit(1);
+			}
+			
+			if ((NumberOfThreads<=0) || (NumberOfLines<=0)) {
+				textArea.append("your params may not poisitive: NumberOfThreads , NumberOfLines\n"+NumberOfThreads+NumberOfLines);
+			    System.exit(1);
+			}
+			
+			CWriter.Start(NumberOfThreads,NumberOfLines,textArea);
+
+			try {
+			    CWriter.Join();
+			} catch (InterruptedException ex) {
+			    Logger.getLogger(lab4.class.getName()).log(Level.SEVERE, null, ex);
+			} 
+			
+		    }
+		    
+	 
+
+}

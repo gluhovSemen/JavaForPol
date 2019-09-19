@@ -1,0 +1,264 @@
+package lab5;
+
+
+import java.awt.*;
+import java.awt.event.*;
+
+import javax.swing.*;
+
+public class lab55 extends JFrame {
+	
+	private static JTextArea textArea;
+    private static JScrollPane scrollPane;
+    private static JMenuBar mainMenu;
+    private static JMenu fileMenu;
+    private static JMenu reportMenu;
+    private static JMenuItem exitMenuItem;
+    private static JMenuItem memoryMenuItem1;
+    private static JMenuItem memoryMenuItem2;
+    private static JMenuItem memoryMenuItem3;
+    private static JMenuItem memoryMenuItem4;
+    private static JTextField textField;
+    private static JLabel Label;
+    private static JButton go1 ;
+    private static JButton go2 ;
+    private static JButton go3 ;
+    private static JButton go4 ;
+    private static  JFrame window ;
+    
+    public static lab55 test;
+	
+
+	public lab55() {
+	  	 
+	    
+	    textArea = new JTextArea();
+        scrollPane = new JScrollPane(textArea);
+        mainMenu = new JMenuBar();
+        fileMenu = new JMenu();
+        reportMenu = new JMenu();
+        exitMenuItem = new JMenuItem();
+             memoryMenuItem1 = new JMenuItem();
+             memoryMenuItem2 = new JMenuItem();
+             memoryMenuItem3 = new JMenuItem();
+             memoryMenuItem4 = new JMenuItem();
+             textField  = new JTextField();
+             go1   = new JButton("GO1")  ;
+             go2   = new JButton("GO2")  ;
+             go3   = new JButton("GO3")  ;
+             go4   = new JButton("GO4")  ;
+             Label= new JLabel();
+             
+          textArea.setEditable(false);
+        
+     
+     
+        Font font = new Font("Verdana", Font.BOLD, 12);
+        textArea.setFont(font);
+        
+        window = new JFrame("Lab 5 Kabeshova Elizaveta");
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        window.setSize(500, 400);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+               Dimension frameSize = window.getSize();
+                window.setLocation(new Point((screenSize.width - frameSize.width) / 2,(screenSize.height - frameSize.width) / 2));
+              window.setLayout(new BorderLayout());
+                window.add(Label)  ;
+                
+          
+                Label.setIcon(new ImageIcon("s.JPG"));
+                Label.setVisible(true);
+           
+                
+                
+               
+        fileMenu.setText("Меню");
+        exitMenuItem.setText("Выход");
+        exitMenuItem.addActionListener(new ActionListener()
+        {
+                    public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                            exitMenuAction(evt);
+                    }
+             });
+                fileMenu.add(exitMenuItem);
+        
+                
+            
+                
+        reportMenu.setText("Задания");
+        memoryMenuItem1.setText("Задание 1");
+        memoryMenuItem2.setText("Задание 2");
+        memoryMenuItem3.setText("Задание 3");
+        memoryMenuItem4.setText("Задание 4");
+       
+            memoryMenuItem1.addActionListener(new ActionListener()
+        {                         public void actionPerformed(ActionEvent evt)
+            	            {                         memoryMenuAction(1);
+            	           
+                              }
+       
+                }  );
+                 memoryMenuItem2.addActionListener(new ActionListener()
+            {                         public void actionPerformed(ActionEvent evt)
+                {                                memoryMenuAction(2);
+                        }
+                    });
+                 memoryMenuItem3.addActionListener(new ActionListener()
+                 {                     public void actionPerformed(ActionEvent evt)
+                     {                         memoryMenuAction(3);
+                             }
+                         });
+                 memoryMenuItem4.addActionListener(new ActionListener()
+                 {                     public void actionPerformed(ActionEvent evt)
+                     {                         memoryMenuAction(4);
+                             }
+                         });
+                reportMenu.add(memoryMenuItem1);
+                reportMenu.add(memoryMenuItem2);
+                reportMenu.add(memoryMenuItem3);
+                reportMenu.add(memoryMenuItem4);
+        
+        mainMenu.add(fileMenu);
+        mainMenu.add(reportMenu);
+        window.setJMenuBar(mainMenu);
+        window.setVisible(true);
+        
+
+	    go1.addActionListener(new ButtonEventListener1());
+	    go2.addActionListener(new ButtonEventListener2());
+	    go3.addActionListener(new ButtonEventListener3());
+	    go4.addActionListener(new ButtonEventListener4());
+	  
+	}
+
+	class ButtonEventListener1 implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			lab1 laba1 = new lab1();
+			 int n=1;
+			String one = null ,three=null,two=null;
+			String res =textField.getText();
+			String[] str=res.split(" ");
+			
+		    for (int j=0; j<str.length;j++)
+					  {
+				        				         
+                        if (n==1) 
+                       	 one=str[j];
+                        if (n==2) 
+                       	 two=str[j];
+                        if (n==3) 
+                       	 three=str[j];
+                        n++;
+            	  }
+			 textArea.setText(laba1.gogogo(one, two, three));
+		}
+		}
+	
+	class ButtonEventListener2 implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			shop lab2 = new shop();
+			int l;
+			String res =textField.getText();
+			l=Integer.parseInt(res);
+			textArea.setText("");
+			shop.lab2(l,textArea);
+			}
+	}
+		
+	
+	class ButtonEventListener3 implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			lab3 laba3=new lab3();
+			textArea.setText("");
+			lab3.laba3(textArea);
+			}
+		}
+	class ButtonEventListener4 implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			lab4 laba4=new lab4();
+			int n=1;
+			Integer one = 0 ,two=0;
+			String res =textField.getText();
+			String[] str=res.split(" ");
+			for (int j=0; j<str.length;j++)
+					  {
+				      				         
+                        if (n==1) 
+                       	 one=Integer.parseInt(str[j]);
+                        if (n==2) 
+                       	 two=Integer.parseInt(str[j]);
+                                      n++;
+            	  }
+			textArea.setText("");
+			lab4.main(one, two, textArea);	
+						}
+		}
+    
+	
+    public static void logInfo(String log)
+    {
+            textArea.setText(log); 
+            //textArea.append(log);
+          
+              }
+    
+    private static void memoryMenuAction(int i)
+    {
+    	Label.setVisible(false);
+        window.add(scrollPane, BorderLayout.CENTER);
+        window.add(textField, BorderLayout.PAGE_START);
+    	textField.setVisible(true);
+         scrollPane.setVisible(true);
+         
+    	switch(i)
+    	{case 1:  
+    		go2.setVisible(false);
+    		go3.setVisible(false);
+    		go4.setVisible(false);
+    		 window.add(go1, BorderLayout.PAGE_END);
+    		 go1.setVisible(true);
+    	logInfo("Введите в верхнее окно число, операнд, число");
+    	
+    	break;
+    	  	case 2:  
+    	  		go1.setVisible(false);
+        		go3.setVisible(false);
+        		go4.setVisible(false);
+        		window.add(go2, BorderLayout.PAGE_END);
+    	  		go2.setVisible(true);
+    	  		logInfo("Введите  в верхнее окно количество товаров,\n чтобы узнать сколько из них сожно подарить");
+    	  	
+    	break;
+    	  	case 3:
+    	  		go1.setVisible(false);
+        		go2.setVisible(false);
+        		go4.setVisible(false);
+    	  		window.add(go3, BorderLayout.PAGE_END);
+	  		go3.setVisible(true);
+	  		logInfo("Ничего не вводите");
+    	  	//
+        	break;
+    	  	case 4:  
+    	  		go2.setVisible(false);
+        		go3.setVisible(false);
+        		go1.setVisible(false);
+    	  		window.add(go4, BorderLayout.PAGE_END);
+    	  		go4.setVisible(true);
+    	  		logInfo("Введите  в верхнее окно количество потоков, \n потом количество строк "); 
+    	  	//
+        	break;
+        }
+    }
+    
+	
+	  private static void exitMenuAction(java.awt.event.ActionEvent evt)
+	    {
+	                System.exit(0);
+	        }
+
+	public static void main(String[] args) {
+		test = new lab55();
+		
+	}
+}

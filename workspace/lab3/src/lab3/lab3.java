@@ -1,0 +1,111 @@
+/**
+ *
+ * @author ≈лизавета
+*/
+
+/**
+ *
+ * @author ≈лизавета
+ * 
+ * 3. Ќапишите приложение с 2 потоками- производителем и потребителем, которые имеют раздел€емую статическую переменную- склад.
+ “о есть склад не €вл€етс€ массивом!
+—клад хранит целые числа от 0 до 100.
+ѕроизводитель генерирует число от 0 до 100 и отправл€ет его на склад, вывод€ им€ производител€ и сгенеренное число.
+ѕотребитель читает значение числа со склада, как только оно там по€вилось, и выводит  на консоль им€ потребител€ и 
+полученное число.
+  ¬ыполнить задание   с использованием конструкции synchronized . 
+Ќе использовать в этом задании флаги дл€ синхронизации потоков, а только методы wait и notify. 
+“акже не использовать любые задержки дл€ потоков после начала их работы в виде методов sleep, yield или wait c параметром.
+
+ */
+
+package lab3;
+
+import java.util.Random;
+
+
+class Number{
+	static int qqq;
+	
+	synchronized void first(){
+
+		
+		Random rand = new Random(); 
+		qqq=rand.nextInt(100);
+		System.out.print(Thread.currentThread().getName()+"  "+qqq+"\n");
+
+		notify();
+		//////
+		try{
+			wait();
+		}
+		catch(InterruptedException e){
+			System.out.print("Interrap perehva4eno!\n");
+		}
+	}
+	
+	synchronized void second(){
+
+		
+		System.out.print(Thread.currentThread().getName()+" "+qqq+"\n");
+		
+		notify();
+		try{
+			wait();
+		}
+		catch(InterruptedException e){
+			System.out.print("Interrap perehva4eno!\n");
+		}
+	}	
+}
+
+class Thread1 extends Thread{
+	Number n;
+	int col;
+	
+	Thread1(Number n, int m){
+		this.n=n;
+		col=m;
+		
+		new Thread(this, "ѕроизводитель ").start();
+	}
+	public void run(){
+		for(int i=0;i<col; i++){
+			n.first();
+		}
+	}
+}
+
+class Thread2 extends Thread{
+	Number n;
+	int col;
+	
+	Thread2(Number n, int m){
+		super("ѕотребитель ");
+		this.n=n;
+		col=m;
+		
+		start();
+	}
+	public void run(){
+		for(int i=0;i<col; i++){
+			n.second();
+		}
+	}
+}
+
+class lab3 {
+	public static void main(String args[]){
+		try{
+		
+		Number n=new Number();
+	    int col=100;
+		new Thread1(n,col);
+		new Thread2(n,col);
+		}
+		catch(Exception e){
+			System.out.print("You must type positive integer number only!/n");
+		}
+	}
+}
+

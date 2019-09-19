@@ -1,0 +1,133 @@
+/**
+ *
+ * @author ≈лизавета
+ * 
+ * 3. Ќапишите приложение с 2 потоками- производителем и потребителем, которые имеют раздел€емую статическую переменную- склад.
+ “о есть склад не €вл€етс€ массивом!
+—клад хранит целые числа от 0 до 100.
+ѕроизводитель генерирует число от 0 до 100 и отправл€ет его на склад, вывод€ им€ производител€ и сгенеренное число.
+ѕотребитель читает значение числа со склада, как только оно там по€вилось, и выводит  на консоль им€ потребител€ и 
+полученное число.
+  ¬ыполнить задание   с использованием конструкции synchronized . 
+Ќе использовать в этом задании флаги дл€ синхронизации потоков, а только методы wait и notify. 
+“акже не использовать любые задержки дл€ потоков после начала их работы в виде методов sleep, yield или wait c параметром.
+
+ */
+
+package lab3;
+
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+
+public class lab3 {
+
+    
+    public static final Object m_Synh=new Object(); //синхропеременна€	
+    public static Integer m_Value=0;		    //обща€ пам€ть потоков дл€ хранени€ текущего числа 
+    
+    static class producer extends Thread {
+	public static int m_Count; //счетчик
+	public static int i,j;
+	
+
+	public static void Reset() {
+	    //сбрасывает цикл потока генерации чисел, запуска€ его сначала
+	    System.out.println("\n Number create: Reset"); 
+	    //m_Count=-1;
+	    i=0;
+	    j=1;
+	}
+	
+	@Override
+	public void run() {
+	    synchronized(m_Synh) {
+		System.out.println("\nNumber create: Start");
+		i=0;
+		j=1;
+			
+		Random rand = new Random();
+		
+		for(m_Count=0; m_Count<100; m_Count++) {
+			//i = (int)(Math.random());
+			i=rand.nextInt();
+					
+		    System.out.printf("\nNumber create: %d\n",i);
+		    m_Value=i;
+		    int tmp=j;
+		    j=i+j;
+		    i=tmp;
+		   	    
+		    m_Synh.notify(); 
+		    	try {
+		    		m_Synh.wait();
+		    	} catch (InterruptedException ex) {
+		    		Logger.getLogger(lab3.class.getName()).log(Level.SEVERE, null, ex);
+		    	}
+		    
+		    	if ((double)i+(double)j>Integer.MAX_VALUE) { //переполнение натурального типа
+		    		System.out.println("\nNumber create: integer owerflow");
+		    		Reset();
+		    		lab3.consumer.Reset();
+		    }
+		}
+		m_Synh.notify();
+		System.out.println("\nNumber create: Terminate"); 
+	    }
+	}
+
+
+    }
+    
+    static class consumer extends Thread {
+	private static int m_Count; //счетчик чтени€
+	
+	
+	public static void Reset() {
+	    //сбрасывает цикл потока чтени€ чисел, запуска€ его сначала
+	    System.out.println("\n Number read: Reset"); 
+	    //m_Count=-1;
+	}
+	
+	@Override	
+	public void run() {
+	    synchronized (m_Synh) {
+		System.out.println("\n Number read: Start");
+		for(m_Count=0; m_Count<100; m_Count++) {
+		    
+			System.out.printf("\n Number read: %d\n",m_Value);
+		    
+		    m_Synh.notify();
+		    try {
+			m_Synh.wait();
+		    } catch (InterruptedException ex) {
+			Logger.getLogger(lab3.class.getName()).log(Level.SEVERE, null, ex);
+		    }
+		}
+		m_Synh.notify();
+		System.out.println("\n Number read: Terminate");    
+	    }
+	}
+    }
+    
+    
+    
+    public static void main(String[] args) {
+    producer p=new producer();
+	consumer c=new consumer();
+	
+	p.start();
+	c.start();
+	
+	try {
+	    p.join();
+	    c.join();
+	} 
+	catch (InterruptedException ex) {
+	    Logger.getLogger(lab3.class.getName()).log(Level.SEVERE, null, ex);
+	}
+	
+    }
+}
+
